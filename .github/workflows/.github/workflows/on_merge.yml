@@ -1,0 +1,27 @@
+name: Check Files on Main
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  check-files:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Get the code
+      uses: actions/checkout@v4
+    
+    - name: Check if files exist
+      run: python verify_required_files.py
+    
+    - name: Send log to AWS
+      run: |
+        aws logs put-log-events \
+          --log-group-name "/github-actions/required-files-checker/prod" \
+          --log-stream-name "$(date -u +%Y-%m-%d)" \
+          --log-events timestamp=$(date +%s000),message="Main check passed by ${{ github.actor }}"
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}

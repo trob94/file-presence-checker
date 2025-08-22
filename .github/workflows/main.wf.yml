@@ -18,6 +18,12 @@ jobs:
     
     - name: Send log to AWS
       run: |
+        # Create log stream (ignore error if it exists)
+        aws logs create-log-stream \
+          --log-group-name "/github-actions/required-files-checker/prod" \
+          --log-stream-name "$(date -u +%Y-%m-%d)" || echo "Stream may already exist"
+        
+        # Send the log event
         aws logs put-log-events \
           --log-group-name "/github-actions/required-files-checker/prod" \
           --log-stream-name "$(date -u +%Y-%m-%d)" \

@@ -3,6 +3,7 @@ name: Check Files on Main
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   check-files:
